@@ -124,6 +124,28 @@ public class Person {
 //    private PersonTaxInformation taxInformation;
 
     @JsonIgnore
+    private String taxIdSolarisBankId;
+
+    @JsonIgnore
+    private String taxIdCountry;
+
+    @JsonIgnore
+    private String taxIdNumber;
+
+    @JsonIgnore
+    private String taxIdReasonNoTin;
+
+    @JsonIgnore
+    private String taxIdReasonDescription;
+
+    @JsonIgnore
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate taxIdValidUntil;
+
+    @JsonIgnore
+    private boolean taxIdPrimary;
+
+    @JsonIgnore
     private String TaxInformationMaritalStatus;
 
     @JsonIgnore
@@ -189,8 +211,14 @@ public class Person {
     @JsonProperty("salutation")
     private String salutation;
 
+    @JsonIgnore
+    private String mobileNumberId;
+
     @JsonProperty("mobile_number")
     private String mobileNumber;
+
+    @JsonIgnore
+    private boolean mobileNumberVerified;
 
     @JsonProperty("fatca_relevant")
     private boolean fatcaRelevant;

@@ -1,14 +1,13 @@
 package com.luizconrado.weisshaus.solarisbankapi_v2.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luizconrado.weisshaus.solarisbankapi_v2.model.AuthenticationToken;
 import com.luizconrado.weisshaus.solarisbankapi_v2.model.Person;
 import com.luizconrado.weisshaus.solarisbankapi_v2.utilities.HttpClientResponse;
 import com.luizconrado.weisshaus.solarisbankapi_v2.utilities.JacksonObjectMapper;
 
-import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -16,14 +15,14 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-public class PersonEndpointQuery {
+public class PersonMobileNumberEndpointQuery {
 
 
-
-    public List<Person> getPersons(AuthenticationToken token, int pageSize, int pageNumber) {
+    public void getPersonMobileNumbers(AuthenticationToken token, int pageSize, int pageNumber, Person person) {
 
 
         String entityEndpoint = "persons";
+        String entityEndpoint2 = "mobile_number";
         String baseEndpoint = token.getBaseEndpoint();
         String apiVersion = token.getApiVersion();
         String host = token.getHost();
@@ -32,41 +31,27 @@ public class PersonEndpointQuery {
 
         ObjectMapper mapper = new JacksonObjectMapper().getObjectMapper();
 
-        // create a JSON object
-        // ObjectNode payload = mapper.createObjectNode();
-        // payload.put("Host", host);
-        // payload.put("Authorization", token.getTokenType() + " " + token.getAccessToken());
-
-        // convert `ObjectNode` to pretty-print JSON
-        // without pretty-print, use `user.toString()` method
-        // String payloadString = null;
-
-
-        // payloadString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(payload);
-
-        // print payloadString
-        // System.out.println(payloadString);
 
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(baseEndpoint)
                 .path(apiVersion)
                 .path(entityEndpoint)
-                .queryParam("page[number]", pageNumber)
+                .path(person.getId())
+                .path(entityEndpoint2)
+                .queryParam("page[number]", 1)
                 .queryParam("page[size]", pageSize);
-
 
         // Print URI being called:
         // System.out.println(target.getUri().toString());
-
 
         Response response = HttpClientResponse.getResponse(token, host, target, "GET");
 
 
         // Read Response Status & other information:
-        // System.out.println(response.getStatus());
-        // System.out.println(response.getStatusInfo());
-        // response.getStringHeaders().entrySet().forEach(System.out::println);
-        // System.out.println(response.getAllowedMethods());
+//            System.out.println(response.getStatus());
+//            System.out.println(response.getStatusInfo());
+//            response.getStringHeaders().entrySet().forEach(System.out::println);
+//            System.out.println(response.getAllowedMethods());
 
         if (response == null) {
 
@@ -77,31 +62,52 @@ public class PersonEndpointQuery {
 
             String responseString = response.readEntity(String.class);
 
-            if (response.getStatus() >= 200 || response.getStatus() < 300) {
+//            System.out.println(responseString);
+//            System.out.println(response.getStatus());
 
-                List<Person> personList = null;
+            if (response.getStatus() >= 200 && response.getStatus() < 300) {
+
+                JsonNode jsonNode = null;
 
                 try {
-                    personList = mapper.readValue(responseString, new TypeReference<List<Person>>() {
-                    });
+
+                    jsonNode = mapper.readTree(responseString);
+
                 } catch (JsonProcessingException e) {
+
                     e.printStackTrace();
+
                 }
 
-                //System.out.println(responseString);
-                // System.out.println(personList);
+                person.setMobileNumberId(jsonNode.get("id").asText());
+                person.setMobileNumber(jsonNode.get("number").asText());
+                person.setMobileNumberVerified(jsonNode.get("verified").asBoolean());
 
-                return personList;
+//                System.out.println(jsonNode.size());
+//                System.out.println(jsonNode.isArray());
+//                System.out.println(jsonNode.getNodeType().toString());
+
+//                ArrayNode array = (ArrayNode) jsonNode;
+//                System.out.println(array.isEmpty());
+//                System.out.println(array.fields().hasNext());
+
+
+                return;
+
+            } else if (response.getStatus() == 404) {
+
+//                System.out.println("404 - Model Not Found");
+                return;
 
             } else {
+
                 System.out.println(responseString);
                 throw new BadRequestException("Callout did not work out");
+
             }
 
         }
 
-
     }
-
 
 }
