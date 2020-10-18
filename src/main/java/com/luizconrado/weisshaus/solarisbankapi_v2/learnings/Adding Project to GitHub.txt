@@ -1,0 +1,18 @@
+Adding new project to git and GitHub:
+
+Create a new repository on the command line:
+echo "# solarisbankapi_v2" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:luizconrado/solarisbankapi_v2.git
+git push -u origin main
+
+
+Adding existing project to git and GitHub:
+
+Or push an existing repository from the command line
+git remote add origin git@github.com:luizconrado/solarisbankapi_v2.git
+git branch -M main
+git push -u origin main

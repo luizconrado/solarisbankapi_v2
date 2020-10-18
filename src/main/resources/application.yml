@@ -1,4 +1,14 @@
 spring:
   profiles:
     active: "production"
-#    active: "sandbox"
+    #    active: "sandbox"
+
+  lifecycle:
+    timeout-per-shutdown-phase: 1s
+
+#  devtools:
+#    restart:
+#      enabled: false
+
+server:
+  shutdown: graceful
