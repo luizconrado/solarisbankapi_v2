@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: weisshaus-solarisbank-api
+  jpa:
+    database: postgresql
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://127.0.0.1:5432/weisshaus
+    username: postgres
+    password: docker
+    hikari:
+      jdbc-url: jdbc:postgresql://127.0.0.1:5432/weisshaus
+      schema: solarisbank
+      auto-commit: true
+      connection-init-sql: select 1
+      connection-test-query: select 1
+      username: postgres
+      password: docker
+solarisbank:
+  environment: SolarisBank_Production_Weisshaus

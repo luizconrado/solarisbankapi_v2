@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "solarisbank.environment",
+      "type": "java.lang.String",
+      "description": "Description for solarisbank.environment."
+    }
+  ]
+}
