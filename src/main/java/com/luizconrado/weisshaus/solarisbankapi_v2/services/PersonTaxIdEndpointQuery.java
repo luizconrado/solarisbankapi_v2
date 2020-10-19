@@ -1,10 +1,12 @@
 package com.luizconrado.weisshaus.solarisbankapi_v2.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luizconrado.weisshaus.solarisbankapi_v2.model.AuthenticationToken;
 import com.luizconrado.weisshaus.solarisbankapi_v2.model.Person;
+import com.luizconrado.weisshaus.solarisbankapi_v2.model.PersonTaxId;
 import com.luizconrado.weisshaus.solarisbankapi_v2.utilities.HttpClientResponse;
 import com.luizconrado.weisshaus.solarisbankapi_v2.utilities.JacksonObjectMapper;
 
@@ -14,12 +16,13 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PersonTaxIdEndpointQuery {
 
 
-    public void getPersonTaxIDs(AuthenticationToken token, int pageSize, int pageNumber, Person person) {
+    public List<PersonTaxId> getPersonTaxIDs(AuthenticationToken token, int pageSize, int pageNumber, Person person) {
 
 
         String entityEndpoint = "persons";
@@ -31,6 +34,8 @@ public class PersonTaxIdEndpointQuery {
 
 
         ObjectMapper mapper = new JacksonObjectMapper().getObjectMapper();
+
+        List<PersonTaxId> personTaxIds = new ArrayList<>();
 
 
         Client client = ClientBuilder.newClient();
@@ -75,58 +80,41 @@ public class PersonTaxIdEndpointQuery {
                     jsonNode = mapper.readTree(responseString);
 
                 } catch (JsonProcessingException e) {
-
+                    System.out.println("getPersonTaxIDs Failed -> jsonNode = mapper.readTree(responseString)");
                     e.printStackTrace();
 
                 }
 
-                if (jsonNode.isArray() && jsonNode.size() > 1) {
 
-                    throw new BadRequestException("Too many Tax IDs present. You need to make it a One Person to Many Tax IDs relation");
+                try {
 
-                } else if (jsonNode.isArray() && jsonNode.size() == 1) {
+                    List<PersonTaxId> personTaxIdentificationsTemp = mapper.readValue(responseString, new TypeReference<List<PersonTaxId>>() {
+                    });
 
-//                person.setMobileNumberId(jsonNode.get("id").asText());
-//                person.setMobileNumber(jsonNode.get("number").asText());
-//                person.setMobileNumberVerified(jsonNode.get("verified").asBoolean());
+                    if (personTaxIdentificationsTemp.size() > 0) {
+                        personTaxIdentificationsTemp.forEach(p -> p.setPersonId(person.getId()));
+                        personTaxIds.addAll(personTaxIdentificationsTemp);
+                    }
 
-                    person.setTaxIdSolarisBankId(jsonNode.get(0).get("id").asText());
-                    person.setTaxIdCountry(jsonNode.get(0).get("country").asText());
-                    person.setTaxIdNumber(jsonNode.get(0).get("number").asText());
-                    person.setTaxIdPrimary(jsonNode.get(0).get("primary").asBoolean());
-                    person.setTaxIdReasonNoTin(jsonNode.get(0).get("reason_no_tin").asText());
-                    person.setTaxIdReasonDescription(jsonNode.get(0).get("reason_description").asText());
-//                https://stackoverflow.com/questions/47695681/json-node-get-aslocaldate
-//                https://www.baeldung.com/jackson-serialize-dates
-//                    https://mkyong.com/java8/java-8-how-to-convert-string-to-localdate/
-                    person.setTaxIdValidUntil(mapper.convertValue(jsonNode.get(0).get("valid_until"), LocalDate.class));
-
-//                    System.out.println(jsonNode.size());
-//                    System.out.println(jsonNode.isArray());
-//                System.out.println(jsonNode.getNodeType().toString());
-
-//                ArrayNode array = (ArrayNode) jsonNode;
-//                System.out.println(array.isEmpty());
-//                System.out.println(array.fields().hasNext());
+                    return personTaxIds;
 
 
-                    return;
+                } catch (JsonProcessingException e) {
+                    System.out.println("getPersonTaxIDs Failed -> personTaxIdentificationsTemp = " +
+                            "mapper.readValue(responseString, new TypeReference<List<PersonTaxId>>()");
+                    e.printStackTrace();
 
-                } else {
-
-                    return;
+                    return personTaxIds;
 
                 }
-
 
 
             } else if (response.getStatus() == 404) {
 
 //                System.out.println("404 - Model Not Found");
-                return;
+                return personTaxIds;
 
             } else {
-
                 System.out.println(responseString);
                 throw new BadRequestException("Callout did not work out");
 

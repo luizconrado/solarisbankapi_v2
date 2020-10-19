@@ -123,27 +123,27 @@ public class Person {
 //    @JsonProperty("tax_information")
 //    private PersonTaxInformation taxInformation;
 
-    @JsonIgnore
-    private String taxIdSolarisBankId;
-
-    @JsonIgnore
-    private String taxIdCountry;
-
-    @JsonIgnore
-    private String taxIdNumber;
-
-    @JsonIgnore
-    private String taxIdReasonNoTin;
-
-    @JsonIgnore
-    private String taxIdReasonDescription;
-
-    @JsonIgnore
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate taxIdValidUntil;
-
-    @JsonIgnore
-    private boolean taxIdPrimary;
+//    @JsonIgnore
+//    private String taxIdSolarisBankId;
+//
+//    @JsonIgnore
+//    private String taxIdCountry;
+//
+//    @JsonIgnore
+//    private String taxIdNumber;
+//
+//    @JsonIgnore
+//    private String taxIdReasonNoTin;
+//
+//    @JsonIgnore
+//    private String taxIdReasonDescription;
+//
+//    @JsonIgnore
+//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+//    private LocalDate taxIdValidUntil;
+//
+//    @JsonIgnore
+//    private boolean taxIdPrimary;
 
     @JsonIgnore
     private String TaxInformationMaritalStatus;
