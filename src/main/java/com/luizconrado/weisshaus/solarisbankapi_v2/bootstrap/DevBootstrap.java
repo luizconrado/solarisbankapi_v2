@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +39,8 @@ public class DevBootstrap implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        Instant start = Instant.now();
+
         Authentication auth = new Authentication();
         AuthenticationToken token = auth.getCredentials(environment);
 
@@ -55,6 +59,13 @@ public class DevBootstrap implements CommandLineRunner {
 
 
         personTaxIdRepository.saveAll(personTaxIds);
+
+
+        Instant finish = Instant.now();
+        long timeElapsed = Duration.between(start, finish).toMillis();
+
+        System.out.println("Elapsed Time During Execution: " + timeElapsed + " milliseconds");
+        System.out.println("Elapsed Time During Execution: " + timeElapsed/1000.0 + " seconds");
 
 
     }
