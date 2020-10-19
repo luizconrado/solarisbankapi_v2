@@ -44,13 +44,16 @@ public class DevBootstrap implements CommandLineRunner {
 
         List<Person> persons = new PersonEndpointQuery().getPersons(token, 1000, 1);
         persons.parallelStream().forEach(p -> new PersonMobileNumberEndpointQuery().getPersonMobileNumbers(token, 1000, 1, p));
+
+        personRepository.saveAll(persons);
+
         List<PersonTaxId> personTaxIds = persons.parallelStream()
                 .map(p -> new PersonTaxIdEndpointQuery().getPersonTaxIDs(token, 1000, 1, p))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         System.out.println(persons);
 
-        personRepository.saveAll(persons);
+
         personTaxIdRepository.saveAll(personTaxIds);
 
 
