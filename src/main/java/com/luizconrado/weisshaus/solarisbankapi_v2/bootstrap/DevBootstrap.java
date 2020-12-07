@@ -1,14 +1,11 @@
 package com.luizconrado.weisshaus.solarisbankapi_v2.bootstrap;
 
-import com.luizconrado.weisshaus.solarisbankapi_v2.model.AuthenticationToken;
-import com.luizconrado.weisshaus.solarisbankapi_v2.model.Person;
-import com.luizconrado.weisshaus.solarisbankapi_v2.model.PersonTaxId;
+import com.luizconrado.weisshaus.solarisbankapi_v2.model.*;
+import com.luizconrado.weisshaus.solarisbankapi_v2.repositories.PersonIdentificationAttemptRepository;
+import com.luizconrado.weisshaus.solarisbankapi_v2.repositories.PersonIdentificationRepository;
 import com.luizconrado.weisshaus.solarisbankapi_v2.repositories.PersonRepository;
 import com.luizconrado.weisshaus.solarisbankapi_v2.repositories.PersonTaxIdRepository;
-import com.luizconrado.weisshaus.solarisbankapi_v2.services.Authentication;
-import com.luizconrado.weisshaus.solarisbankapi_v2.services.PersonEndpointQuery;
-import com.luizconrado.weisshaus.solarisbankapi_v2.services.PersonMobileNumberEndpointQuery;
-import com.luizconrado.weisshaus.solarisbankapi_v2.services.PersonTaxIdEndpointQuery;
+import com.luizconrado.weisshaus.solarisbankapi_v2.services.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -29,11 +26,15 @@ public class DevBootstrap implements CommandLineRunner {
 
     private PersonRepository personRepository;
     private PersonTaxIdRepository personTaxIdRepository;
+    private PersonIdentificationRepository personIdentificationRepository;
+    private PersonIdentificationAttemptRepository personIdentificationAttemptRepository;
 
 
-    public DevBootstrap(PersonRepository personRepository, PersonTaxIdRepository personTaxIdRepository) {
+    public DevBootstrap(PersonRepository personRepository, PersonTaxIdRepository personTaxIdRepository, PersonIdentificationRepository personIdentificationRepository, PersonIdentificationAttemptRepository personIdentificationAttemptRepository) {
         this.personRepository = personRepository;
         this.personTaxIdRepository = personTaxIdRepository;
+        this.personIdentificationRepository = personIdentificationRepository;
+        this.personIdentificationAttemptRepository = personIdentificationAttemptRepository;
     }
 
     @Override
@@ -48,17 +49,31 @@ public class DevBootstrap implements CommandLineRunner {
 
         List<Person> persons = new PersonEndpointQuery().getPersons(token, 1000, 1);
         persons.parallelStream().forEach(p -> new PersonMobileNumberEndpointQuery().getPersonMobileNumbers(token, 1000, 1, p));
+//        System.out.println(persons);
 
-        personRepository.saveAll(persons);
 
         List<PersonTaxId> personTaxIds = persons.parallelStream()
                 .map(p -> new PersonTaxIdEndpointQuery().getPersonTaxIDs(token, 1000, 1, p))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        System.out.println(persons);
 
 
+        List<PersonIdentification> personIdentifications = persons.parallelStream()
+                .map(p -> new PersonIdentificationEndpointQuery().getPersonIdentifications(token, 1000, 1, p))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+
+        List<PersonIdentificationAttempt> personIdentificationAttempts = personIdentifications.parallelStream()
+                .map(pia -> new PersonIdentificationAttemptEndpointQuery().getPersonIdentificationAttempts(token, 1000, 1, pia))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+
+        personRepository.saveAll(persons);
         personTaxIdRepository.saveAll(personTaxIds);
+        personIdentificationRepository.saveAll(personIdentifications);
+        personIdentificationAttemptRepository.saveAll(personIdentificationAttempts);
 
 
         Instant finish = Instant.now();
