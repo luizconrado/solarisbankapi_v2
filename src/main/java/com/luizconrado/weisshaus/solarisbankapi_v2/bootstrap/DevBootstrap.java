@@ -22,7 +22,7 @@ public class DevBootstrap implements CommandLineRunner {
     // Value injected from application-{profiles.active}.yaml
     // application-{profiles.active}.yaml is defined in the application.yaml file
     @Value("${solarisbank.environment}")
-    String environment;
+    String solarisbankEnvironment;
 
     private PersonRepository personRepository;
     private PersonTaxIdRepository personTaxIdRepository;
@@ -43,7 +43,7 @@ public class DevBootstrap implements CommandLineRunner {
         Instant start = Instant.now();
 
         SolarisbankAuthentication auth = new SolarisbankAuthentication();
-        AuthenticationToken token = auth.getCredentials(environment);
+        AuthenticationToken token = auth.getCredentials(solarisbankEnvironment);
 
         System.out.println(token.getAccessToken());
 
