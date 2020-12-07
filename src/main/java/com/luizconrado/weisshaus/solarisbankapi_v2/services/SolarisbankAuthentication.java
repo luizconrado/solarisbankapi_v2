@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-public class Authentication {
+public class SolarisbankAuthentication {
 
 
     public AuthenticationToken getCredentials(String environment) {

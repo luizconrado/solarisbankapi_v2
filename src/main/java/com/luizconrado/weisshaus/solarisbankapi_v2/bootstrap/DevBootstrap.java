@@ -42,7 +42,7 @@ public class DevBootstrap implements CommandLineRunner {
 
         Instant start = Instant.now();
 
-        Authentication auth = new Authentication();
+        SolarisbankAuthentication auth = new SolarisbankAuthentication();
         AuthenticationToken token = auth.getCredentials(environment);
 
         System.out.println(token.getAccessToken());
