@@ -22,4 +22,5 @@ spring:
       password: docker
 solarisbank:
   environment: SolarisBank_Sandbox_Weisshaus
-
+auth0:
+  environment: Auth0_Production_Weisshaus

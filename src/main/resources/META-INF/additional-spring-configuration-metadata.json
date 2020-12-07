@@ -4,6 +4,11 @@
       "name": "solarisbank.environment",
       "type": "java.lang.String",
       "description": "Description for solarisbank.environment."
+    },
+    {
+      "name": "auth0.environment",
+      "type": "java.lang.String",
+      "description": "Description for auth0.environment."
     }
   ]
 }
